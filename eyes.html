@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>做赢家要眼快，不服来战</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1,user-scalable=no"/>
+    <link href="css/common.css" rel="stylesheet">
+</head>
+<body>
+<section class="main">
+    <div class="timeArea">
+        <span><img src="images/clock.png"/></span>
+        <span><img src="images/m.png" /></span>
+        <span class="spn"><img src="images/d.png" /></span>
+        <span><img src="images/m1.png" alt="" id="seconds1"></span>
+        <span><img src="images/m5.png" alt="" id="seconds2"></span>
+    </div>
+    <div class="canvasArea">
+        <canvas id="canvas" width="300" height="350">
+            你的浏览器不支持Canvas画布
+        </canvas>
+    </div>
+</section>
+<script src="js/resize.js"></script>
+<script src="js/jquery-2.1.1.min.js"></script>
+<script>
+    function EyesGame(opt) {
+        this.seconds1=opt.seconds1;
+        this.seconds2=opt.seconds2;
+        this.t=5;
+        this.time=null;
+        this.lock=false;
+        //保存小图数组
+        this.smallArr=[];
+        //保存小图图片对象相关的信息:图片的url,x,y坐标,图片的名称
+        this.data1=[];
+        //保存大图数组
+        this.bigArr=[];
+        //保存大图图片对象相关的信息:图片的url,x,y坐标,图片的名称
+        this.data2=[];
+        this.score=0;
+        this.selectAreas=[];
+        this.ctx=canvas.getContext("2d");
+        this.init();
+    }
+    EyesGame.prototype={
+        constructor:EyesGame,
+        init:function () {
+           this.time=setInterval(function () {
+               this.countDown();
+           }.bind(this),1000);
+            this.createImgObj();
+            window.onload=function () {
+                this.drawImg();
+            }.bind(this);
+            this.canvasClick();
+        },
+        countDown:function () {
+            this.t--;
+            if(this.t<0){
+                this.t=9;
+                this.lock=true;
+                $(this.seconds1).attr("src","images/m0.png");
+            }
+            if(this.lock&&!this.t){
+                clearInterval(this.time);
+                localStorage.setItem("small",this.score);
+                if (this.score>=0&&this.score<=10){
+                    location.href="https://www.baidu.com/";
+                }
+            }
+
+            $(this.seconds2).attr("src","images/m"+this.t+".png");
+        },
+        //创建图片对象
+        createImgObj:function () {
+            for(var i=1;i<5;i++){
+                //小图对象
+                this.smallArr[i]=new Image();
+                this.smallArr[i].src="images/"+i+".png";
+                //大图对象
+                this.bigArr[i]=new Image();
+                this.bigArr[i].src="images/"+(i+10)+".png";
+//                console.log(this.smallArr[i].src);
+//                console.log(this.bigArr[i].src);
+            }
+        },
+        //画图
+        drawImg:function () {
+            //画小图
+            for(var i=0; i<12;i++){
+                this.data1[i]=[];
+                for(var j=0;j<14;j++){
+                    //为了随机取smallArr里的图片对象
+                    var n=Math.ceil(Math.random()*4);
+                    this.ctx.drawImage(this.smallArr[n],i*25,j*25,25,25);
+                    this.data1[i][j]=this.smallArr[n].src+","+i*25+","+j*25+","+n;
+//                    console.log(this.data1[i][j]);
+                }
+
+            }
+            //画大图
+            for(var i=0; i<6;i++){
+                this.data2[i]=[];
+                for(var j=0;j<7;j++){
+                    //为了随机取smallArr里的图片对象
+                    var n=Math.ceil(Math.random()*4);
+                    var m=Math.ceil(Math.random()*100);
+                    if (m%3==0){
+                        this.ctx.clearRect(i*50,j*50,50,50);
+                        this.ctx.drawImage(this.bigArr[n],i*50,j*50,50,50);
+                        this.data2[i][j]=this.bigArr[n].src+","+i*50+","+j*50+","+n;
+//                        console.log(this.data2[i][j]);
+                    }
+                    //console.log(this.data2[i]);
+                }
+            }
+        },
+        canvasClick:function () {
+            canvas.addEventListener("click",function (event) {
+                var x1=event.clientX-canvas.getBoundingClientRect().left;
+                var y1=event.clientY-canvas.getBoundingClientRect().top;
+//                console.log(x1,y1);
+                //小图
+                var x=parseInt(x1/25);
+                var y=parseInt(y1/25);
+                //大图
+                var m=parseInt(x1/50);
+                var n=parseInt(y1/50);
+//                console.log(x1,y1,m,n);
+//                console.log(typeof this.data2[m][n]);
+                if (typeof this.data2[m][n]!="undefined"){
+                    if (this.selectAreas.indexOf("big"+m+","+n)!=-1)return;
+                    this.selectAreas.push("big"+m+","+n);
+                    this.changeImg(this.data2[m][n]);
+                }else{
+                    if (this.selectAreas.indexOf("small"+x+","+y)!=-1)return;
+                    this.selectAreas.push("small"+x+","+y);
+                    this.changeImg(this.data1[x][y]);
+                }
+            }.bind(this));
+        },
+        changeImg:function (obj) {
+            console.log(obj);
+            var arrImg=obj.split(",");
+//            console.log(arrImg);
+            var key=arrImg[0].substring(0,arrImg[0].length-4);
+            console.log(key);
+            var imgSelect=new Image();
+            if (arrImg[3]==localStorage.getItem("n")){
+                this.score++;
+                imgSelect.src=key+"c.png";
+                imgSelect.onload=function () {
+                    this.ctx.drawImage(imgSelect,arrImg[1],arrImg[2]);
+                }.bind(this);
+                console.log(this.score);
+            }
+        }
+    };
+    var eyesGame=new EyesGame({
+        seconds1:"#seconds1",
+        seconds2:"#seconds2"
+    });
+</script>
+</body>
+</html>

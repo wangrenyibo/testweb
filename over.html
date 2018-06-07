@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1,user-scalable=no"/>
+    <link href="css/common.css" rel="stylesheet">
+</head>
+<body>
+<section class="main">
+    <div class="bg lessBg"></div>
+    <div class="levelNum"></div>
+    <div class="ls"></div>
+    <a href="#" class="writeInfo"></a>
+    </section>
+    <script src="js/resize.js"></script>
+    <script src="js/jquery-2.1.1.min.js"></script>
+    <script>
+        $(function(){
+            var s=localStorage.getItem("s");
+            console.log(s);
+            var n=localStorage.getItem("n");
+            console.log(n);
+            $(".levelNum").text(s);
+            $(".ls").append("<img src='images/l"+n+".png'/>")
+        });
+    </script>
+</body>
+</html>

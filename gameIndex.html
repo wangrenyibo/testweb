@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>做赢家要眼快，不服来战</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1,user-scalable=no"/>
+    <link href="css/common.css" rel="stylesheet">
+</head>
+<body>
+<section class="main">
+    <div class="bg gameIndexBg"></div>
+    <dl class="eDirection">
+        <dt><img class="word" src="images/w3.png" alt=""></dt>
+        <dt><img class="small" src="images/s3.png" alt=""></dt>
+        <dd><img class="large" src="images/l3.png" alt=""></dd>
+    </dl>
+    <a href="eyes.html" class="start"></a>
+</section>
+<script src="js/resize.js"></script>
+<script src="js/jquery-2.1.1.min.js"></script>
+<script>
+    $(function () {
+        var num=Math.ceil(Math.random()*4);
+        $(".word").attr("src","images/w"+num+".png");
+        $(".small").attr("src","images/s"+num+".png");
+        $(".large").attr("src","images/l"+num+".png");
+        localStorage.setItem("n",num);
+    })
+</script>
+</body>
+</html>
